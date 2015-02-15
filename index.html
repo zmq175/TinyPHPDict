@@ -9,18 +9,60 @@
 	<link href="includes/font-awesome/css/font-awesome.min.css" rel="stylesheet">
 	<script src="http://apps.bdimg.com/libs/jquery/2.0.0/jquery.min.js"></script>
 	<script src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+	<script type="text/javascript">
+	function lookup(inword){
+		if (inword.length==0) {
+			//hide suggestionList
+			$('#suggestions').hide();
+		}
+		else{
+			$.post("includes/suggestion_response.php",{queryString:""+inword+""},function (data){
+			if (data.length>0) {
+				$('#suggestions').show();
+				$('#autoSuggestionsList').html(data);
+			}
+			})
+		}
+	}
+	function fill(thisValue){
+	$('#inword').val(thisValue);
+	$('#suggestions').hide();
+	}
+	$(document).ready(function (){
+	$.get("includes/history_response.php",function (data){
+		if(data.length==0){
+			$('#nohistorydisplay').show();
+		}
+		if (data.length>0) {
+			$('#history').show();
+			$('#historydisplay').html(data);
+		}
+	})
+	}
+	);
+	</script>
 	<title>英语词典</title>
 </head>
 	<body>	
 		<div class="container">
-		<h1>英语词典</h1>
-		<p class="lead">一个轻量级的PHP词典</p>
-		<form id="form1" name="form1" role="form" class="form-inline text-center" method="post" action="search.php">
-			<div class="form-group">
-  				<input class="form-control input-lg" name="inword" id="inword" size="50%" type="text">
-  			</div>
-  			<button class="btn btn-default input-lg" type="submit"><i class="fa icon-search"></i></button>
-		</form>
+			<h1><a href="index.html">英语词典</a></h1>
+			<p class="lead">一个轻量级的PHP词典</p>
+			<form id="form1" name="form1" role="form" class="form-inline text-center" method="post" action="search.php">
+				<div class="form-group">
+  					<input class="form-control input-lg" name="inword" id="inword" onkeyup="lookup(this.value);" size="50%" type="text" autocomplete="off">
+  					<button class="btn btn-default input-lg" type="submit"><i class="fa fa-search"></i></button>
+  					<div id="suggestions" style="display: none;position:absolute;" class="col-lg-3">
+						<div id="autoSuggestionsList">
+						</div>
+					</div>
+  				</div>
+			</form>
+			<h3>单词回顾<small>显示近期查询的20个单词</small></h3>
+			<div class="alert alert-info" style="display:none;" id="nohistorydisplay"><div class="text-center">您还没有查询过单词，快去补充词汇量吧</div></div>
+			<div id="history" style="display:none;position:absolute;z-index:-10;">
+				<div id="historydisplay">
+				</div>
+			</div>
 		</div>
 	</body>
 </html>
